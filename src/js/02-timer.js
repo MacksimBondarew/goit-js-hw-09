@@ -13,8 +13,15 @@ const hoursElement = getElement('[data-hours]');
 const minutesElement = getElement('[data-minutes]');
 const secondsElement = getElement('[data-seconds]');
 const input = getElement('#datetime-picker');
-console.log(start);
-console.log(1)
+const field = document.querySelectorAll('.field');
+const timer = getElement('.timer');
+timer.style.display = 'flex';
+field.forEach (item => {
+    item.firstElementChild.style.fontSize = '24px';
+    item.lastElementChild.style.fontSize = '24px';
+    item.lastElementChild.style.marginRight = '24px';
+})
+
 
 start.disabled = true;
 
@@ -26,10 +33,10 @@ const options = {
     defaultDate: new Date(),
     minuteIncrement: 1,
     onClose(selectedDates) {
-        if (selectedDates[0] <= new Date()) {
-            start.disabled = true;
-            Notiflix.Notify.failure( "Please choose a date in the future");
-        } else {
+        console.log(selectedDates[0]);
+        selectedDate = selectedDates[0];
+        currentDate = new Date();
+        if (selectedDate > currentDate) {
             start.disabled = false;
             start.addEventListener('click', () => {
                 timerId = setInterval(() => {
@@ -47,46 +54,42 @@ const options = {
                         start.disabled = false;
                     }
                 }) 
-            })
-        }
-        function diferentDate() {
-            const date = new Date(input.value).getTime();
-            const now = new Date().getTime();
-            const timeDiference = date - now;
-        }
-
-        function addNubmer(days, hours, minutes, seconds) {
-            daysElement.innerHTML = days < 10 ? addZero(days) : days;
-            minutesElement.innerHTML = minutes < 10 ? addZero(minutes) : minutes;
-            hoursElement.innerHTML = hours < 10 ? addZero(hours) : hours;
-            secondsElement.innerHTML = seconds < 10 ? addZero(seconds) : seconds;
-        }
-
-        //Add zero if one цифра
-
-        function addZero(event) {
-            return String(event).padStart(2, '0');
-        }
-
-        function convertMs(ms) {
-            // Number of milliseconds per unit of time
-            const second = 1000;
-            const minute = second * 60;
-            const hour = minute * 60;
-            const day = hour * 24;
-            // Remaining days
-            const days = Math.floor(ms / day);
-            // Remaining hours
-            const hours = Math.floor((ms % day) / hour);
-            // Remaining minutes
-            const minutes = Math.floor(((ms % day) % hour) / minute);
-            // Remaining seconds
-            const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-            
-            return { days, hours, minutes, seconds };
-        }
+            });
+        } else {
+            start.disabled = true;
+            Notiflix.Notify.failure( "Please choose a date in the future");
+        };
     },
-    
 };
+function addNubmer(days, hours, minutes, seconds) {
+    daysElement.innerHTML = days < 10 ? addZero(days) : days;
+    minutesElement.innerHTML = minutes < 10 ? addZero(minutes) : minutes;
+    hoursElement.innerHTML = hours < 10 ? addZero(hours) : hours;
+    secondsElement.innerHTML = seconds < 10 ? addZero(seconds) : seconds;
+}
+
+//Add zero if one цифра
+
+function addZero(event) {
+    return String(event).padStart(2, '0');
+}
+
+function convertMs(ms) {
+    // Number of milliseconds per unit of time
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+    // Remaining days
+    const days = Math.floor(ms / day);
+    // Remaining hours
+    const hours = Math.floor((ms % day) / hour);
+    // Remaining minutes
+    const minutes = Math.floor(((ms % day) % hour) / minute);
+    // Remaining seconds
+    const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+    
+    return { days, hours, minutes, seconds };
+}
 
 flatpickr(input, options);
